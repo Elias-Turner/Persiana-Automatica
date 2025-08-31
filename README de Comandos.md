@@ -42,3 +42,10 @@ python3 EjercicioEntregable2.py -m multi < comandos.txt
    ```
 
 El programa dejará de leer más comandos y esperará a que todos los hilos en ejecución terminen antes de finalizar.
+
+## Valor de Retorno
+```bash
+echo #?
+```
+
+Esta linea es para ver el retorno final del programa si hay errores o no
