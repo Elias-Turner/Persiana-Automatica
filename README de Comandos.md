@@ -40,26 +40,3 @@ python3 EjercicioEntregable2.py -m multi < comandos.txt
    ```
 
 El programa dejará de leer más comandos y esperará a que todos los hilos en ejecución terminen antes de finalizar.
-
-## Salida esperada
-
-Cada comando ejecutado imprime:
-```
-"timestamp" "comando" ->"retorno"
-```
-
-Ejemplo:
-```
-"2025-08-31T16:32:10.123456" "echo Hola mundo" ->"0"
-```
-
-Al finalizar, muestra un reporte:
-```
---- Reporte Final ---
-Comandos ejecutados correctamente: X
-Comandos que arrojaron error: Y
-```
-
-El valor de retorno será:
-- **0** si no hubo errores.
-- **1** si al menos un comando falló.
