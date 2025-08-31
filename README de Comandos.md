@@ -11,7 +11,7 @@ ejecución en modo monohilo o multihilo, y responde a señales **SIGTERM** y **S
 
 ### Modo monohilo
 ```bash
-python3 EjercicioEntregable.py -m single < comandos.txt
+python3 EjercicioEntregable2.py -m single < comandos.txt
 ```
 
 ### Modo multihilo
