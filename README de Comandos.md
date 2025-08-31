@@ -1,7 +1,7 @@
 # Ejecutor de Comandos con Manejo de Señales
 
 Este programa ejecuta comandos leídos desde la entrada estándar, con soporte para
-ejecución en modo monohilo o multihilo, y responde a señales **SIGTERM** y **SIGUSR1**.
+ejecución en modo monohilo o multihilo, y responde a señales **TERM** y **USR1**.
 
 ## Archivos incluidos
 - `EjercicioEntregable2.py` → Programa principal.
@@ -30,7 +30,7 @@ python3 EjercicioEntregable2.py -m multi < comandos.txt
 3. Obtener el PID del proceso (el programa lo muestra al iniciar).
 4. Enviar la señal:
    ```bash
-   kill -USR1 <PID>
+   kill -USR1 PID
    ```
 
 ### Enviar señal TERM para finalizar ordenadamente
@@ -38,7 +38,7 @@ python3 EjercicioEntregable2.py -m multi < comandos.txt
 2. Obtener el PID del proceso.
 3. Enviar la señal:
    ```bash
-   kill -TERM <PID>
+   kill -TERM PID
    ```
 
 El programa dejará de leer más comandos y esperará a que todos los hilos en ejecución terminen antes de finalizar.
