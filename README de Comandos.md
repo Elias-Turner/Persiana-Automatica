@@ -4,19 +4,19 @@ Este programa ejecuta comandos leídos desde la entrada estándar, con soporte p
 ejecución en modo monohilo o multihilo, y responde a señales **SIGTERM** y **SIGUSR1**.
 
 ## Archivos incluidos
-- `script.py` → Programa principal.
+- `EjercicioEntregable2.py` → Programa principal.
 - `comandos.txt` → Lista de comandos de prueba.
 
 ## Ejecución
 
 ### Modo monohilo
 ```bash
-python3 script.py -m single < comandos.txt
+python3 EjercicioEntregable.py -m single < comandos.txt
 ```
 
 ### Modo multihilo
 ```bash
-python3 script.py -m multi < comandos.txt
+python3 EjercicioEntregable2.py -m multi < comandos.txt
 ```
 
 ## Pruebas con señales
