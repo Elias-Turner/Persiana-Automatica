@@ -1,4 +1,4 @@
-# Diccionario Distribuido (Servidor y Cliente TCP)
+# Diccionario Distribuido (Servidor y Cliente)
 
 Este proyecto implementa un **diccionario distribuido** basado en **sockets TCP** con soporte **multi-hilo**.  
 El sistema permite que varios clientes se conecten simultáneamente a un **servidor central**, el cual mantiene un diccionario compartido en memoria.
@@ -12,6 +12,7 @@ El proyecto consta de dos aplicaciones principales:
 - **Servidor (`server.py`)**: Mantiene el diccionario en memoria y atiende múltiples clientes concurrentes mediante hilos.
 - **Cliente (`client.py`)**: Permite enviar comandos al servidor para agregar, listar y obtener palabras del diccionario.
 
+Ambos se comunican a través de una conexión TCP, utilizando un protocolo textual simple.
 ---
 
 ## Servidor (`server.py`)
@@ -41,14 +42,13 @@ Puerto: 65432
 ### Señales y Finalización
 
 - **SIGTERM**: al recibirla, el servidor deja de aceptar nuevas conexiones y espera a que terminen los hilos activos antes de finalizar.
-- **Ctrl + C**: interrumpe la ejecución manualmente (KeyboardInterrupt).
+- **Ctrl + C**: Detiene el servidor de forma controlada. Cierra el socket principal y espera a que todos los hilos clientes terminen antes de finalizar el proceso.
 
-### Características
-
-- Soporta múltiples clientes concurrentes.
-- Acceso sincronizado al diccionario.
-- Comunicación en texto plano codificada en **UTF-8**.
-- Cierre ordenado de sockets e hilos al finalizar.
+### Caracteristicas
+- Puerto por defecto: 65432 (puede cambiarse editando la variable puerto en el código).
+- Dirección: localhost (usa la IP local de tu máquina).
+- Conexiones: cada cliente se maneja en un hilo independiente.
+- Sincronización: el acceso al diccionario compartido se controla con threading.Lock() para evitar condiciones de carrera
 
 ---
 
