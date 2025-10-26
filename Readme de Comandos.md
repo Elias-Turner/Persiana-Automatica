@@ -1,106 +1,276 @@
-# Script Organizador de Archivos por Tamaño
+# 🧠 Diccionario Distribuido (Servidor y Cliente TCP)
 
-Este script en **Bash** organiza los archivos de un directorio en subcarpetas según su tamaño.  
-Además, actualiza las fechas de acceso y modificación de los archivos y muestra un resumen de lo procesado utilizando colores en la terminal.  
+Este proyecto implementa un **diccionario distribuido** basado en **sockets TCP** con soporte **multi-hilo**.  
+El sistema permite que varios clientes se conecten simultáneamente a un **servidor central**, el cual mantiene un diccionario compartido en memoria.
 
+---
 
-## Requerimientos previos  
-- Linux/Ubuntu con Bash.  
-- Permisos de ejecución sobre el script.  
+## ⚙️ Descripción General
 
-## Lo Utilizado
-- `EjercicioEntregable3.sh` → Programa principal.
-- `prueba` → Carpeta con archivos para probar.
+El proyecto consta de dos aplicaciones principales:
 
-## Ejecución en la terminal  
-Para poder ejecutar el script correctamente, se usaron los siguientes comandos en la **terminal**: 
+- **Servidor (`server.py`)**: Mantiene el diccionario en memoria y atiende múltiples clientes concurrentes mediante hilos.
+- **Cliente (`client.py`)**: Permite enviar comandos al servidor para agregar, listar y obtener palabras del diccionario.
 
-## Comandos utilizados
-### Comandos de terminal para ejecutar el script
+---
 
-**chmod +x EjercicioEntregable3.sh**  
-Se utiliza para otorgar permisos de ejecución al script. Esto es necesario porque, por defecto, los archivos creados en Linux no siempre tienen permiso de ejecución, y sin este comando no podríamos ejecutar `executor6.sh` directamente desde la terminal.
+## 🖥️ Servidor (`server.py`)
 
-**dos2unix EjercicioEntregable3.sh**  
-Convierte el archivo de formato Windows a formato Unix. Esto es importante porque los saltos de línea de Windows (`\r\n`) pueden generar errores en Bash; `dos2unix` los reemplaza por el formato correcto (`\n`), asegurando que el script funcione sin problemas en Linux.
+### 📋 Descripción
 
-**./EjercicioEntregable3.sh ~/prueba**  
-Ejecuta el script indicando un directorio de trabajo como argumento. El script tomará todos los archivos dentro de este directorio para procesarlos, moverlos según su tamaño y actualizar sus fechas de acceso y modificación.
+El servidor se encarga de:
 
-**echo $?**
-Se utiliza para ver el retorno del programa. Si hubo un error dara 2, si el directorio estaba vacio o no habia archivos regulares dara 1, y si se ejecuto correctamente y los archivos regulares se movieron a sus respectivas carpetas dara 0.
+- Aceptar conexiones TCP en el puerto **65432**.
+- Manejar varios clientes simultáneamente mediante **hilos** (`threading.Thread`).
+- Proteger el acceso concurrente al diccionario mediante un **lock** (`threading.Lock`).
+- Procesar comandos enviados por los clientes y devolver respuestas de texto plano.
 
-
-### Comandos dentro del script
-
-**#!/bin/bash**  
-Es el shebang del script y le indica al sistema que debe ejecutarse con Bash. Esto me aseguro que se interpreten correctamente todas las construcciones y sintaxis propias de Bash, evitando errores de compatibilidad con otros shells.
-
-**set -e**  
-Configura el script para que se detenga inmediatamente si ocurre cualquier error durante su ejecución. Lo utilice para evitar que el script continúe procesando archivos cuando se encuentra con un problema, garantizando integridad y consistencia.
-
-**ROJO='\033[0;31m'**, **VERDE='\033[0;32m'**, **AZUL='\033[0;34m'**, **AMARILLO='\033[1;33m'**, **NC='\033[0m'**  
-Definen variables con códigos ANSI para mostrar texto en colores dentro de la terminal. Se usó para mejorar la legibilidad de los mensajes, permitiendo distinguir errores, advertencias e información de manera visual.
-
-**echo -e**  
-Se utiliza para imprimir mensajes en la terminal interpretando caracteres especiales como los códigos de color ANSI. Esto me permitio mostrar la información del script de manera clara y con formato, diferenciando mensajes de error, éxito y advertencia.
-
-**if [ $# -eq 0 ]**  
-Verifica si el script se ejecutó sin argumentos. Lo utilice es prevenir errores posteriores al intentar procesar un directorio inexistente y notificar al usuario que debe proporcionar una ruta válida.
-
-**if [ ! -d "$DIRECTORIO" ]**  
-Comprueba si la ruta pasada como argumento no existe o no es un directorio. Lo use porque evita que el script falle al intentar cambiar de directorio o procesar archivos inexistentes.
-
-**cd "$DIRECTORIO"**  
-Cambia al directorio pasado como argumento. Esto es necesario para que todas las operaciones de creación de carpetas, recorrido de archivos y movimientos se realicen dentro del directorio correcto.
-
-**mkdir -p SmallFiles MediumFiles LargeFiles**  
-Crea las carpetas destino para organizar los archivos según su tamaño. La opción `-p` evita errores si las carpetas ya existen y asegura que el script pueda ejecutarse varias veces sin problemas.
-
-**for archivo in "$DIRECTORIO"/*; do ... done**  
-Recorre todos los elementos dentro del directorio. Con esto pude procesar cada archivo individualmente, aplicar la clasificación por tamaño y actualizar sus fechas de acceso y modificación.
-
-**if [ -f "$archivo" ]**  
-Comprueba si el elemento es un archivo regular y no un directorio. Lo utilice para evitar errores al intentar mover carpetas u otros tipos de archivos especiales.
-
-**stat -c%s "$archivo"**  
-Obtiene el tamaño del archivo en bytes. Esta forma es esencial para determinar en qué carpeta destino se moverá el archivo según los criterios de tamaño establecidos.
-
-**tamano_mb=$((tamano_bytes / 1048576))**  
-Convierte el tamaño de bytes a megabytes para simplificar las comparaciones. Me permitió clasificar los archivos en SmallFiles, MediumFiles o LargeFiles de manera más comprensible.
-
-**mv "$archivo" "CarpetaDestino/"**  
-Mueve el archivo a la carpeta correspondiente según su tamaño. Esto organiza automáticamente los archivos y mantiene limpio el directorio original.
-
-**touch "$archivo"**  
-Actualiza la fecha de acceso y modificación del archivo a la fecha y hora actuales. Lo use para marcar que el archivo fue procesado y reflejar el cambio en el sistema de archivos.
-
-**exit 0**  
-Finaliza el script con código de salida 0, indicando que se procesaron archivos correctamente. Esto permite que otros programas o scripts que llamen a este script sepan que todo se ejecutó sin errores.
-
-**exit 1**  
-Finaliza el script con código de salida 1 si no había archivos para procesar. Esto notifica al usuario o a otros scripts que el directorio estaba vacío.
-
-**exit 2**  
-Finaliza el script con código de salida 2 si ocurrió un error, como un directorio inexistente o argumento faltante. Esto ayuda a manejar errores de manera predecible y permite depuración.
-
-## Colores utilizados (ANSI)  
-
-El script imprime mensajes con colores para mejorar la legibilidad:  
-
-- `\033[0;31m` → **Rojo**: errores.  
-- `\033[0;32m` → **Verde**: mensajes de éxito.  
-- `\033[0;34m` → **Azul**: información.  
-- `\033[1;33m` → **Amarillo**: advertencias.  
-- `\033[0m` → Resetear color.  
-
-
-
-## Salida al Ejecutar el Programa 
+### 🚀 Ejecución
 
 ```bash
-Cambiado al directorio: /home/usuario/pruebaKION
-Total de archivos procesados: 5
-Movidos a SmallFiles (<1MB): 2
-Movidos a MediumFiles (1MB–100MB): 2
-Movidos a LargeFiles (>100MB): 1
+python3 server.py
+```
+
+Por defecto, el servidor escucha en:
+
+```
+Host: localhost
+Puerto: 65432
+```
+
+### 🔒 Señales y Finalización
+
+- **SIGTERM**: al recibirla, el servidor deja de aceptar nuevas conexiones y espera a que terminen los hilos activos antes de finalizar.
+- **Ctrl + C**: interrumpe la ejecución manualmente (KeyboardInterrupt).
+
+### 🧩 Características
+
+- Soporta múltiples clientes concurrentes.
+- Acceso sincronizado al diccionario.
+- Comunicación en texto plano codificada en **UTF-8**.
+- Cierre ordenado de sockets e hilos al finalizar.
+
+---
+
+## 💻 Cliente (`client.py`)
+
+### 📋 Descripción
+
+El cliente permite enviar comandos al servidor para operar sobre el diccionario compartido.  
+Cada comando se envía como texto terminado en salto de línea (`\n`), y el servidor responde también en texto plano.
+
+### 🚀 Ejecución
+
+Sintaxis general:
+
+```bash
+python3 client.py host port comando
+```
+
+Ejemplo básico:
+
+```bash
+python3 client.py localhost 65432 listar
+```
+
+### 🧭 Parámetros
+
+| Parámetro | Descripción |
+|------------|-------------|
+| `host` | Dirección del servidor (por ejemplo, `localhost`). |
+| `port` | Puerto TCP (por defecto `65432`). |
+| `comando` | Comando a ejecutar (ver comandos disponibles más abajo). |
+
+---
+
+## 📡 Protocolo de Comunicación
+
+### 🔤 Descripción General
+
+El protocolo entre **cliente** y **servidor** se basa en comandos de texto terminados en `\n`.  
+Cada comando puede incluir argumentos, separados por el carácter `|` cuando sea necesario.
+
+### 📜 Comandos Soportados
+
+| Comando | Formato de Envío | Descripción | Respuesta del Servidor |
+|----------|------------------|--------------|------------------------|
+| `listar` | `listar` | Lista todas las palabras registradas. | `OK\npalabra1\npalabra2...\n` o `OK: Diccionario Vacio` |
+| `agregar` | `agregar palabra|definicion` | Agrega o actualiza una palabra en el diccionario. | `OK\nPalabra agregada\n` o `OK\nPalabra actualizada\n` |
+| `obtener` | `obtener palabra` | Devuelve la definición de una palabra. | `OK\ndefinicion\n` o `ERR 3 Palabra no encontrada` |
+
+### ⚠️ Códigos de Error
+
+| Código | Mensaje | Descripción |
+|--------|----------|-------------|
+| `ERR 1` | Formato inválido o palabra vacía al agregar | Error de sintaxis en el comando `agregar`. |
+| `ERR 2` | Palabra vacía al obtener | Se envió `obtener` sin especificar palabra. |
+| `ERR 3` | Palabra no encontrada | La palabra solicitada no existe en el diccionario. |
+| `ERR 4` | Comando desconocido | Se envió un comando no reconocido. |
+
+---
+
+## 🧪 Ejemplos de Uso y Pruebas
+
+### 1️⃣ Iniciar el Servidor
+
+```bash
+python3 server.py
+```
+
+El servidor mostrará un mensaje indicando que está escuchando:
+
+```
+[servicio] Escuchando en localhost:65432 ... (PID xxxx)
+```
+
+### 2️⃣ Ejecutar comandos desde otra terminal
+
+#### 🔹 Listar (diccionario vacío)
+
+```bash
+python3 client.py localhost 65432 listar
+```
+**Salida esperada:**
+```
+OK: Diccionario Vacio
+```
+
+#### 🔹 Agregar palabras
+
+```bash
+python3 client.py localhost 65432 agregar sol|Estrella que ilumina la Tierra
+python3 client.py localhost 65432 agregar luna|Satélite natural de la Tierra
+```
+**Salida esperada:**
+```
+OK
+Palabra agregada
+```
+
+#### 🔹 Listar palabras existentes
+
+```bash
+python3 client.py localhost 65432 listar
+```
+**Salida esperada:**
+```
+OK
+luna
+sol
+```
+
+#### 🔹 Obtener definiciones
+
+```bash
+python3 client.py localhost 65432 obtener sol
+```
+**Salida esperada:**
+```
+OK
+Estrella que ilumina la Tierra
+```
+
+#### 🔹 Actualizar una palabra
+
+```bash
+python3 client.py localhost 65432 agregar sol|Cuerpo celeste que emite luz
+```
+**Salida esperada:**
+```
+OK
+Palabra actualizada
+```
+
+#### 🔹 Error de formato
+
+```bash
+python3 client.py localhost 65432 agregar palabra_sin_definicion
+```
+**Salida esperada:**
+```
+ERR 1 Formato inválido. Uso: agregar palabra|definicion
+```
+
+#### 🔹 Comando no reconocido
+
+```bash
+python3 client.py localhost 65432 borrar sol
+```
+**Salida esperada:**
+```
+ERR 4 Comando desconocido
+```
+
+---
+
+## 🧠 Notas Técnicas
+
+### 🔹 Concurrencia
+
+El servidor utiliza:
+
+```python
+lockDiccionario = threading.Lock()
+```
+para garantizar acceso exclusivo al diccionario cuando múltiples hilos lo modifican.
+
+Cada conexión se atiende en un hilo separado:
+
+```python
+hilo = threading.Thread(target=manejarCliente, args=(conn, direccion), daemon=True)
+```
+
+### 🔹 Cierre ordenado
+
+Al recibir **SIGTERM** o **Ctrl + C**, el servidor:
+
+- Cierra el socket principal.
+- Espera que finalicen los hilos activos (`join`).
+- Libera todos los recursos antes de salir.
+
+### 🔹 Códigos de salida del cliente
+
+| Código | Significado |
+|--------|-------------|
+| `0` | Operación exitosa (`OK`) |
+| `2` | Respuesta no reconocida |
+| `5` | No se pudo conectar al servidor |
+| `6` | Error interno del cliente |
+| `10–14` | Errores específicos (`ERR 1–4`) |
+
+---
+
+## 🧩 Tecnologías Utilizadas
+
+- **Python 3.x**
+- **socket** → Comunicación TCP/IP  
+- **threading** → Concurrencia y sincronización  
+- **signal** → Manejo de señales del sistema  
+- **sys / os** → Utilidades de sistema
+
+---
+
+## 🧰 Comandos de Prueba Completos
+
+```bash
+python3 server.py &
+python3 client.py localhost 65432 listar
+python3 client.py localhost 65432 agregar sol|Estrella que ilumina la Tierra
+python3 client.py localhost 65432 agregar luna|Satélite natural de la Tierra
+python3 client.py localhost 65432 listar
+python3 client.py localhost 65432 obtener sol
+python3 client.py localhost 65432 obtener luna
+python3 client.py localhost 65432 agregar sol|Cuerpo celeste que emite luz
+python3 client.py localhost 65432 obtener sol
+python3 client.py localhost 65432 borrar sol
+kill -TERM <pid_del_servidor>
+```
+
+---
+
+## 👨‍💻 Autor
+
+**Proyecto académico:** Diccionario Distribuido (Servidor/Cliente TCP Multi-hilo)  
+**Lenguaje:** Python 3  
+**Desarrollado por:** *[Tu nombre o grupo]*  
+**Año:** 2025
