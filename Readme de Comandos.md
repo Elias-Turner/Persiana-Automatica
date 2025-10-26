@@ -13,6 +13,7 @@ El proyecto consta de dos aplicaciones principales:
 - **Cliente (`client.py`)**: Permite enviar comandos al servidor para agregar, listar y obtener palabras del diccionario.
 
 Ambos se comunican a través de una conexión TCP, utilizando un protocolo textual simple.
+
 ---
 
 ## Servidor (`server.py`)
@@ -212,7 +213,7 @@ ERR 4 Comando desconocido
 | `10–14` | Errores específicos (`ERR 1–4`) |
 
 
-## Comandos de Prueba Completos
+## Comandos de Prueba
 
 ```bash
 python3 server.py &
@@ -225,5 +226,5 @@ python3 client.py localhost 65432 obtener luna
 python3 client.py localhost 65432 agregar sol|Cuerpo celeste que emite luz
 python3 client.py localhost 65432 obtener sol
 python3 client.py localhost 65432 borrar sol
-kill -TERM <pid_del_servidor>
+kill -TERM <PID>
 ```
