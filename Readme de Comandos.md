@@ -73,7 +73,7 @@ Ejemplo básico:
 python3 client.py localhost 65432 listar
 ```
 
-### 🧭 Parámetros
+### Parámetros
 
 | Parámetro | Descripción |
 |------------|-------------|
