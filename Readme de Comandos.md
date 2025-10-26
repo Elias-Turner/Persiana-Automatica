@@ -1,11 +1,11 @@
-# 🧠 Diccionario Distribuido (Servidor y Cliente TCP)
+# Diccionario Distribuido (Servidor y Cliente TCP)
 
 Este proyecto implementa un **diccionario distribuido** basado en **sockets TCP** con soporte **multi-hilo**.  
 El sistema permite que varios clientes se conecten simultáneamente a un **servidor central**, el cual mantiene un diccionario compartido en memoria.
 
 ---
 
-## ⚙️ Descripción General
+## Descripción General
 
 El proyecto consta de dos aplicaciones principales:
 
@@ -14,9 +14,9 @@ El proyecto consta de dos aplicaciones principales:
 
 ---
 
-## 🖥️ Servidor (`server.py`)
+## Servidor (`server.py`)
 
-### 📋 Descripción
+### Descripción
 
 El servidor se encarga de:
 
@@ -25,7 +25,7 @@ El servidor se encarga de:
 - Proteger el acceso concurrente al diccionario mediante un **lock** (`threading.Lock`).
 - Procesar comandos enviados por los clientes y devolver respuestas de texto plano.
 
-### 🚀 Ejecución
+### Ejecución
 
 ```bash
 python3 server.py
@@ -38,12 +38,12 @@ Host: localhost
 Puerto: 65432
 ```
 
-### 🔒 Señales y Finalización
+### Señales y Finalización
 
 - **SIGTERM**: al recibirla, el servidor deja de aceptar nuevas conexiones y espera a que terminen los hilos activos antes de finalizar.
 - **Ctrl + C**: interrumpe la ejecución manualmente (KeyboardInterrupt).
 
-### 🧩 Características
+### Características
 
 - Soporta múltiples clientes concurrentes.
 - Acceso sincronizado al diccionario.
@@ -52,14 +52,14 @@ Puerto: 65432
 
 ---
 
-## 💻 Cliente (`client.py`)
+## Cliente (`client.py`)
 
-### 📋 Descripción
+### Descripción
 
 El cliente permite enviar comandos al servidor para operar sobre el diccionario compartido.  
 Cada comando se envía como texto terminado en salto de línea (`\n`), y el servidor responde también en texto plano.
 
-### 🚀 Ejecución
+### Ejecución
 
 Sintaxis general:
 
@@ -83,14 +83,14 @@ python3 client.py localhost 65432 listar
 
 ---
 
-## 📡 Protocolo de Comunicación
+## Protocolo de Comunicación
 
-### 🔤 Descripción General
+### Descripción General
 
 El protocolo entre **cliente** y **servidor** se basa en comandos de texto terminados en `\n`.  
 Cada comando puede incluir argumentos, separados por el carácter `|` cuando sea necesario.
 
-### 📜 Comandos Soportados
+### Comandos Soportados
 
 | Comando | Formato de Envío | Descripción | Respuesta del Servidor |
 |----------|------------------|--------------|------------------------|
@@ -98,7 +98,7 @@ Cada comando puede incluir argumentos, separados por el carácter `|` cuando sea
 | `agregar` | `agregar palabra|definicion` | Agrega o actualiza una palabra en el diccionario. | `OK\nPalabra agregada\n` o `OK\nPalabra actualizada\n` |
 | `obtener` | `obtener palabra` | Devuelve la definición de una palabra. | `OK\ndefinicion\n` o `ERR 3 Palabra no encontrada` |
 
-### ⚠️ Códigos de Error
+### Códigos de Error
 
 | Código | Mensaje | Descripción |
 |--------|----------|-------------|
@@ -109,9 +109,9 @@ Cada comando puede incluir argumentos, separados por el carácter `|` cuando sea
 
 ---
 
-## 🧪 Ejemplos de Uso y Pruebas
+## Ejemplos de Uso y Pruebas
 
-### 1️⃣ Iniciar el Servidor
+### 1) Iniciar el Servidor
 
 ```bash
 python3 server.py
@@ -123,9 +123,9 @@ El servidor mostrará un mensaje indicando que está escuchando:
 [servicio] Escuchando en localhost:65432 ... (PID xxxx)
 ```
 
-### 2️⃣ Ejecutar comandos desde otra terminal
+### 2) Ejecutar comandos desde otra terminal
 
-#### 🔹 Listar (diccionario vacío)
+#### Listar (diccionario vacío)
 
 ```bash
 python3 client.py localhost 65432 listar
@@ -135,7 +135,7 @@ python3 client.py localhost 65432 listar
 OK: Diccionario Vacio
 ```
 
-#### 🔹 Agregar palabras
+#### Agregar palabras
 
 ```bash
 python3 client.py localhost 65432 agregar sol|Estrella que ilumina la Tierra
@@ -147,7 +147,7 @@ OK
 Palabra agregada
 ```
 
-#### 🔹 Listar palabras existentes
+#### Listar palabras existentes
 
 ```bash
 python3 client.py localhost 65432 listar
@@ -159,7 +159,7 @@ luna
 sol
 ```
 
-#### 🔹 Obtener definiciones
+#### Obtener definiciones
 
 ```bash
 python3 client.py localhost 65432 obtener sol
@@ -170,7 +170,7 @@ OK
 Estrella que ilumina la Tierra
 ```
 
-#### 🔹 Actualizar una palabra
+#### Actualizar una palabra
 
 ```bash
 python3 client.py localhost 65432 agregar sol|Cuerpo celeste que emite luz
@@ -181,7 +181,7 @@ OK
 Palabra actualizada
 ```
 
-#### 🔹 Error de formato
+#### Error de formato
 
 ```bash
 python3 client.py localhost 65432 agregar palabra_sin_definicion
@@ -191,7 +191,7 @@ python3 client.py localhost 65432 agregar palabra_sin_definicion
 ERR 1 Formato inválido. Uso: agregar palabra|definicion
 ```
 
-#### 🔹 Comando no reconocido
+#### Comando no reconocido
 
 ```bash
 python3 client.py localhost 65432 borrar sol
@@ -201,34 +201,7 @@ python3 client.py localhost 65432 borrar sol
 ERR 4 Comando desconocido
 ```
 
----
-
-## 🧠 Notas Técnicas
-
-### 🔹 Concurrencia
-
-El servidor utiliza:
-
-```python
-lockDiccionario = threading.Lock()
-```
-para garantizar acceso exclusivo al diccionario cuando múltiples hilos lo modifican.
-
-Cada conexión se atiende en un hilo separado:
-
-```python
-hilo = threading.Thread(target=manejarCliente, args=(conn, direccion), daemon=True)
-```
-
-### 🔹 Cierre ordenado
-
-Al recibir **SIGTERM** o **Ctrl + C**, el servidor:
-
-- Cierra el socket principal.
-- Espera que finalicen los hilos activos (`join`).
-- Libera todos los recursos antes de salir.
-
-### 🔹 Códigos de salida del cliente
+### Códigos de salida del cliente
 
 | Código | Significado |
 |--------|-------------|
@@ -238,19 +211,8 @@ Al recibir **SIGTERM** o **Ctrl + C**, el servidor:
 | `6` | Error interno del cliente |
 | `10–14` | Errores específicos (`ERR 1–4`) |
 
----
 
-## 🧩 Tecnologías Utilizadas
-
-- **Python 3.x**
-- **socket** → Comunicación TCP/IP  
-- **threading** → Concurrencia y sincronización  
-- **signal** → Manejo de señales del sistema  
-- **sys / os** → Utilidades de sistema
-
----
-
-## 🧰 Comandos de Prueba Completos
+## Comandos de Prueba Completos
 
 ```bash
 python3 server.py &
@@ -265,12 +227,3 @@ python3 client.py localhost 65432 obtener sol
 python3 client.py localhost 65432 borrar sol
 kill -TERM <pid_del_servidor>
 ```
-
----
-
-## 👨‍💻 Autor
-
-**Proyecto académico:** Diccionario Distribuido (Servidor/Cliente TCP Multi-hilo)  
-**Lenguaje:** Python 3  
-**Desarrollado por:** *[Tu nombre o grupo]*  
-**Año:** 2025
