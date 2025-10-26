@@ -96,7 +96,7 @@ Cada comando puede incluir argumentos, separados por el carácter `|` cuando sea
 | Comando | Formato de Envío | Descripción | Respuesta del Servidor |
 |----------|------------------|--------------|------------------------|
 | `listar` | `listar` | Lista todas las palabras registradas. | `OK\npalabra1\npalabra2...\n` o `OK: Diccionario Vacio` |
-| `agregar` | `agregar palabra|definicion` | Agrega o actualiza una palabra en el diccionario. | `OK\nPalabra agregada\n` o `OK\nPalabra actualizada\n` |
+| `agregar` | `agregar "palabra|definicion"` | Agrega o actualiza una palabra en el diccionario. | `OK\nPalabra agregada\n` o `OK\nPalabra actualizada\n` |
 | `obtener` | `obtener palabra` | Devuelve la definición de una palabra. | `OK\ndefinicion\n` o `ERR 3 Palabra no encontrada` |
 
 ### Códigos de Error
@@ -139,8 +139,8 @@ OK: Diccionario Vacio
 #### Agregar palabras
 
 ```bash
-python3 client.py localhost 65432 agregar sol|Estrella que ilumina la Tierra
-python3 client.py localhost 65432 agregar luna|Satélite natural de la Tierra
+python3 client.py localhost 65432 agregar "sol|Estrella que ilumina la Tierra"
+python3 client.py localhost 65432 agregar "luna|Satélite natural de la Tierra"
 ```
 **Salida esperada:**
 ```
@@ -174,7 +174,7 @@ Estrella que ilumina la Tierra
 #### Actualizar una palabra
 
 ```bash
-python3 client.py localhost 65432 agregar sol|Cuerpo celeste que emite luz
+python3 client.py localhost 65432 agregar "sol|Cuerpo celeste que emite luz"
 ```
 **Salida esperada:**
 ```
@@ -218,12 +218,12 @@ ERR 4 Comando desconocido
 ```bash
 python3 server.py &
 python3 client.py localhost 65432 listar
-python3 client.py localhost 65432 agregar sol|Estrella que ilumina la Tierra
-python3 client.py localhost 65432 agregar luna|Satélite natural de la Tierra
+python3 client.py localhost 65432 agregar "sol|Estrella que ilumina la Tierra"
+python3 client.py localhost 65432 agregar "luna|Satélite natural de la Tierra"
 python3 client.py localhost 65432 listar
 python3 client.py localhost 65432 obtener sol
 python3 client.py localhost 65432 obtener luna
-python3 client.py localhost 65432 agregar sol|Cuerpo celeste que emite luz
+python3 client.py localhost 65432 agregar "sol|Cuerpo celeste que emite luz"
 python3 client.py localhost 65432 obtener sol
 python3 client.py localhost 65432 borrar sol
 kill -TERM <PID>
